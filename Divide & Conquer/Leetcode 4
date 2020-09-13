@@ -1,0 +1,52 @@
+class Solution {
+public:
+    //寻找第K大、小元素
+    int findKthElm(vector<int>& a,int abeg,int aend,vector<int>& b,int bbeg,int bend,int k){
+        if(abeg>aend){//如果a数组没有元素，直接返回b数组的第K大、小元素
+            return b[bbeg+k-1];
+        }
+        if(bbeg>bend){//如果b数组没有元素，直接返回a数组的第K大、小元素
+            return a[abeg+k-1];
+        }
+        int amid=(abeg+aend)/2;
+        int bmid=(bbeg+bend)/2;
+        if(a[amid]<b[bmid]){
+          //这里写成a[amid]<b[bmid]是求第k小，改成a[amid]>b[bmid]就是求第K大,本题是求第k小
+            if(amid-abeg+bmid-bbeg+2>k){
+              //如果a[mid]<b[bmid]且k小于两个数组大小之和的一半，k一定不在b的右半部分，所以递归在
+                //整个数组a和b的左半部分找第K小
+                return findKthElm(a,abeg,aend,b,bbeg,bmid-1,k);
+            }
+            else{
+              //如果a[mid]<b[bmid]且k大于等于两个数组大小之和的一半，k一定不在a的左半部分
+              //所以递归在整个b数组和a数组的
+              //右半部分寻找第(k-a左半部分长度)小
+                return findKthElm(a,amid+1,aend,b,bbeg,bend,k-(amid-abeg+1));
+            }
+        }
+        else{//和以上注解一样
+            if(amid-abeg+bmid-bbeg+2>k){
+                return findKthElm(a,abeg,amid-1,b,bbeg,bend,k);
+            }
+            else{
+                return findKthElm(a,abeg,aend,b,bmid+1,bend,k-(bmid-bbeg+1));
+            }
+        } 
+    }
+    double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
+        int sz=nums1.size()+nums2.size();
+        if(sz%2==0){//偶数
+            int a=findKthElm(nums1,0,nums1.size()-1,nums2,0,nums2.size()-1,sz>>1);
+            int b=findKthElm(nums1,0,nums1.size()-1,nums2,0,nums2.size()-1,(sz>>1)+1);
+            return (a+b)/2.0;
+        }
+        else{//奇数
+            return findKthElm(nums1,0,nums1.size()-1,nums2,0,nums2.size()-1,(sz>>1)+1);
+        }
+    }
+};
+
+作者：nojoker
+链接：https://leetcode-cn.com/problems/median-of-two-sorted-arrays/solution/jiang-qi-zhuan-wei-zhao-liang-ge-you-xu-shu-zu-de-/
+来源：力扣（LeetCode）
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
